@@ -32,8 +32,8 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/contact">
-                                    <span className="hover:text-blue-500 cursor-pointer">Contact</span>
+                                <Link href="/profile">
+                                    <span className="hover:text-blue-500 cursor-pointer">Profile</span>
                                 </Link>
                             </li>
                         </ul>
@@ -42,7 +42,7 @@ export default function Footer() {
                         <h3 className="text-lg font-bold text-white">Policies</h3>
                         <ul className="mt-2 space-y-2">
                             <li>
-                                <Link href="/terms">
+                                <Link href="/terms-of-service">
                                     <span className="hover:text-blue-500 cursor-pointer">Terms of Service</span>
                                 </Link>
                             </li>

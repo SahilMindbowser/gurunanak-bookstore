@@ -3,29 +3,42 @@
 import { ProductCard } from '@/components/primary/product-card/product-card';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+
+    const router = useRouter()
+
     return (
         <div>
             {/* Hero Section */}
-            <section className="relative bg-gray-700 text-white h-[100vh] flex items-center justify-center p-3">
-                <div className="absolute inset-0 opacity-30">
+            <section className="relative bg-gray-800 text-white h-[100vh] flex items-center justify-center p-3">
+                <div className="absolute hidden md:block inset-0 opacity-30">
                     <Image
                         width={1440}
                         height={800}
-                        src="/assets/home-background.jpg"
+                        src="/assets/home-bg-desktop.jpg"
+                        alt="Books and Stationery Background"
+                        className="w-full h-full object-cover"
+                    />
+                </div>
+                <div className="absolute block md:hidden inset-0 opacity-30">
+                    <Image
+                        width={1440}
+                        height={800}
+                        src="/assets/home-bg-mobile.jpg"
                         alt="Books and Stationery Background"
                         className="w-full h-full object-cover"
                     />
                 </div>
                 <div className="relative z-10 text-center">
-                    <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                    <h1 className="text-3xl md:text-6xl font-bold mb-6">
                         Welcome to Gurunanak Bookstore
                     </h1>
-                    <p className="text-lg md:text-xl max-w-3xl mx-auto mb-6">
+                    <p className="text-base md:text-xl max-w-3xl mx-auto mb-6">
                         Your trusted partner for school books, stationery, and supplies. Serving tie-up schools and walk-in customers with quality products and unbeatable service.
                     </p>
-                    <Button size="lg" className="px-6 py-3">
+                    <Button size="lg" className="px-6 py-3" onClick={() => { router.push('/grades') }}>
                         Get Started
                     </Button>
                 </div>
@@ -87,7 +100,7 @@ export default function Home() {
                     <p className="text-lg mb-6">
                         Explore our wide range of books and stationery today!
                     </p>
-                    <Button className="px-6 py-3">
+                    <Button className="px-6 py-3" onClick={() => { router.push('/grades') }}>
                         Shop Now
                     </Button>
                 </div>

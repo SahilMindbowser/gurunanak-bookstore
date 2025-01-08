@@ -2,9 +2,11 @@
 
 import Footer from "@/components/primary/footer/footer";
 import Navbar from "@/components/primary/navbar/navbar";
+import { CartProvider } from "@/context/cart-context";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { PropsWithChildren, useEffect } from "react";
+import { Toaster } from "sonner";
 
 export default function AppLayout({ children }: PropsWithChildren) {
   const { data: session, status } = useSession();
@@ -20,8 +22,9 @@ export default function AppLayout({ children }: PropsWithChildren) {
     }
   }, [session, status, router]);
 
-  if(status === "loading") return <></>
+  if (status === "loading") return <></>
 
   return <div className="w-full h-full">
-    <Navbar/>{children}<Footer/></div>;
+    <CartProvider>
+      <Navbar />{children}<Footer /><Toaster /></CartProvider></div>;
 }

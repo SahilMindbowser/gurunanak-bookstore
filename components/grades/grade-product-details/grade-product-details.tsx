@@ -1,40 +1,66 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Product } from '@/types/product';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import Image from 'next/image';
+import { useCart } from '@/context/cart-context';
 import { ProductCard } from '@/components/primary/product-card/product-card';
+import { toast } from 'sonner';
 
-export default function GradeProductDetails() {
-    const [quantity, setQuantity] = useState(1);
+export default function GradeProductDetails({ params }: { params: { grade: string; productId: string } }) {
+    const [quantity, setQuantity] = useState<number>(1);
+    const { addToCart } = useCart();
 
-    const product = {
-        id: 1,
-        title: 'Science Kit - Grade 1',
-        price: 300,
-        description: 'A comprehensive science kit for Grade 1 students to explore the wonders of science.',
-        image: '/assets/classes.jpg',
-        shippingPolicy: 'Shipping typically takes 3-5 business days. Free shipping for orders above $50.',
-        returnPolicy: 'Returns are accepted within 30 days of purchase. Items must be in original condition.',
-    };
+    const [product, setProduct] = useState<Product | null>(null);
+    const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
 
-    const relatedProducts = [
-        { id: 2, title: 'Math Workbook - Grade 1', price: 150, image: '/assets/classes.jpg' },
-        { id: 3, title: 'Drawing Book - Grade 1', price: 100, image: '/assets/classes.jpg' },
-        { id: 4, title: 'Pencil Set', price: 50, image: '/assets/classes.jpg' },
-        { id: 5, title: 'Eraser Pack', price: 30, image: '/assets/classes.jpg' },
-    ];
+    useEffect(() => {
+        const fetchProductDetails = async () => {
+            const { grade, productId } = params;
+
+            const schoolId = '67750d9c7ebea80429b4bda4';
+            try {
+                // Fetch product details
+                const productResponse = await axios.get(`/api/school/${schoolId}/grade/${grade}/product/${productId}`);
+                setProduct(productResponse.data.product);
+
+                // Fetch related products
+                const relatedResponse = await axios.get(`/api/school/${schoolId}/grade/${grade}/product`);
+                setRelatedProducts(relatedResponse.data.products);
+
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching product details:', error);
+                setLoading(false);
+            }
+        };
+
+        fetchProductDetails();
+    }, [params]);
 
     const handleAddToCart = () => {
-        alert(`Added ${quantity} of ${product.title} to the cart.`);
+        if (product) {
+            toast.success(`${quantity} of ${product.title} added to the cart.`)
+            addToCart(product, quantity);
+        }
     };
+
+    if (loading) {
+        return <div className="flex justify-center items-center p-8 min-h-screen"><h1>Loading...</h1></div>;
+    }
+
+    if (!product) {
+        return <div className="flex justify-center items-center p-8 min-h-screen"><h1>Product not found</h1></div>;
+    }
 
     return (
         <div className="container mx-auto p-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Image Section */}
                 <div className="flex items-center justify-center">
                     <Image
                         src={product.image}
@@ -45,12 +71,10 @@ export default function GradeProductDetails() {
                     />
                 </div>
 
-                {/* Product Details Section */}
                 <div className="flex flex-col justify-center space-y-6">
                     <h1 className="text-2xl font-bold">{product.title}</h1>
                     <p className="text-lg font-semibold text-gray-700">${product.price.toFixed(2)}</p>
 
-                    {/* Quantity Selector */}
                     <div className="flex items-center space-x-4">
                         <label htmlFor="quantity" className="font-medium text-gray-700">
                             Quantity:
@@ -65,12 +89,10 @@ export default function GradeProductDetails() {
                         />
                     </div>
 
-                    {/* Add to Cart Button */}
                     <Button onClick={handleAddToCart} className="w-full">
                         Add to Cart
                     </Button>
 
-                    {/* Accordion for Policies */}
                     <Accordion type="single" collapsible className="mt-6">
                         <AccordionItem value="description">
                             <AccordionTrigger>Description</AccordionTrigger>
@@ -88,7 +110,6 @@ export default function GradeProductDetails() {
                 </div>
             </div>
 
-            {/* Additional Product Recommendations */}
             <div className="mt-12">
                 <h2 className="text-xl font-bold mb-4">Related Products</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

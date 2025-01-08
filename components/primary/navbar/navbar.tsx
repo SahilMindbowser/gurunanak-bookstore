@@ -5,11 +5,14 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useCart } from "@/context/cart-context";
 
 export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
     const { data: session } = useSession();
     const router = useRouter();
+    const { cart } = useCart();
+    const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0)
 
     const handleSignOut = () => {
         signOut();
@@ -35,19 +38,36 @@ export default function Navbar() {
                         <Link href="/about-us" className="text-gray-700 hover:text-blue-600">
                             About
                         </Link>
+                        {
+                            session?.user.role === "admin" && (
+                                <>
+                                    <Link href="/admin/users" className="text-gray-700 hover:text-blue-600">
+                                        Users
+                                    </Link>
+                                    <Link href="/admin/orders" className="text-gray-700 hover:text-blue-600">
+                                        Orders
+                                    </Link>
+                                </>
+                            )
+                        }
                         <Link href="/cart" className="relative text-gray-700 hover:text-blue-600">
                             Cart
                             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                                3
+                                {cartItemCount}
                             </span>
                         </Link>
                         {session ? (
-                            <Button
-                                onClick={handleSignOut}
-                                className="text-white hover:text-red-600"
-                            >
-                                Sign Out
-                            </Button>
+                            <>
+                                <Link
+                                    href="/profile"
+                                    className="text-gray-700 hover:text-blue-600"
+                                >
+                                    Profile
+                                </Link>
+                                <Button onClick={handleSignOut} className="text-white hover:text-red-600">
+                                    Sign Out
+                                </Button>
+                            </>
                         ) : (
                             <Link href="/login" className="text-gray-700 hover:text-blue-600">
                                 Login
@@ -97,17 +117,38 @@ export default function Navbar() {
                     <Link href="/about" className="block px-4 py-2 text-gray-700 hover:bg-gray-200">
                         About
                     </Link>
+
+                    {
+                        session?.user.role === "admin" && (
+                            <>
+                                <Link href="/admin/users" className="block px-4 py-2 text-gray-700 hover:bg-gray-200">
+                                    Users
+                                </Link>
+                                <Link href="/admin/orders" className="block px-4 py-2 text-gray-700 hover:bg-gray-200">
+                                    Orders
+                                </Link>
+                            </>
+                        )
+                    }
                     <Link href="/cart" className="block px-4 py-2 text-gray-700 hover:bg-gray-200">
                         Cart
-                        <span className="ml-2 text-sm text-red-500">(3)</span>
+                        <span className="ml-2 text-sm text-red-500">({cartItemCount})</span>
                     </Link>
                     {session ? (
-                        <button
-                            onClick={handleSignOut}
-                            className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200"
-                        >
-                            Sign Out
-                        </button>
+                        <>
+                            <Link
+                                href="/profile"
+                                className="block px-4 py-2 text-gray-700 hover:bg-gray-200"
+                            >
+                                Profile
+                            </Link>
+                            <button
+                                onClick={handleSignOut}
+                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200"
+                            >
+                                Sign Out
+                            </button>
+                        </>
                     ) : (
                         <Link href="/login" className="block px-4 py-2 text-gray-700 hover:bg-gray-200">
                             Login
